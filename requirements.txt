@@ -1,0 +1,6 @@
+openai
+python-dotenv
+IPython
+redlines
+panel
+langchain
