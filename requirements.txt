@@ -3,4 +3,4 @@ python-dotenv
 IPython
 redlines
 panel
-langchain
+# langchain
