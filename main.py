@@ -1,7 +1,7 @@
 import os
 import openai
 import dotenv
-import tiktoken
+# import tiktoken
 
 dotenv.load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -167,7 +167,7 @@ type(response.content)
 # You will get an error by running this line of code 
 # because'gift' is not a dictionary
 # 'gift' is a string
-response.content.get('gift')
+response.content.get("gift")
 
 from langchain.output_parsers import ResponseSchema
 from langchain.output_parsers import StructuredOutputParser
@@ -234,8 +234,5 @@ output_dict
 type(output_dict)
 
 output_dict.get('delivery_days')
-
-############################### Memory ############################### 
-
 
 
