@@ -4,3 +4,9 @@ IPython
 redlines
 panel
 langchain
+youtube-transcript-api
+arxiv
+pymupdf
+wikipedia
+tiktoken
+PyPDF2
