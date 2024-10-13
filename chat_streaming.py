@@ -1,7 +1,5 @@
 import os
-import time
-import langchain
-from langchain.cache import InMemoryCache
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chat_models import AzureChatOpenAI
 from langchain.schema import HumanMessage
 from dotenv import load_dotenv
@@ -19,27 +17,14 @@ chat = AzureChatOpenAI(
     openai_api_version="2024-07-01-preview",
     deployment_name=AZURE_OPENAI_DEPLOYMENT_NAME,
     openai_api_key=AZURE_OPENAI_API_KEY,
-    openai_api_type="azure"
+    openai_api_type="azure",
+    streaming=True,
+    callbacks=[
+        StreamingStdOutCallbackHandler()
+    ]
 )
-
-
-langchain.llm_cache = InMemoryCache()
-
-
-start = time.time()
-result = chat([
-    HumanMessage(content="こんにちは！")
+resp = chat([
+    HumanMessage(content="おいしいステーキの焼き方を教えて")
 ])
 
-end = time.time()
-print(result.content)
-print(f"実行時間: {end - start}秒")
-
-start = time.time()
-result = chat([
-    HumanMessage(content='こんにちは!')
-])
-
-end = time.time()
-print(result.content)
-print(f"実行時間: {end - start}秒")
+response_text = resp.content

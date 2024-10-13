@@ -1,13 +1,15 @@
 import os
-import time
-import langchain
-from langchain.cache import InMemoryCache
-from langchain.chat_models import AzureChatOpenAI
-from langchain.schema import HumanMessage
+import openai
+from langchain import PromptTemplate
+from langchain_openai import AzureChatOpenAI
+from langchain.output_parsers import DatetimeOutputParser
+from langchain_core.messages import HumanMessage, AIMessage
 from dotenv import load_dotenv
 
 # 環境変数をロード
 load_dotenv()
+
+output_parser = DatetimeOutputParser()
 
 # Azure OpenAI APIの設定
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
@@ -22,24 +24,15 @@ chat = AzureChatOpenAI(
     openai_api_type="azure"
 )
 
+prompt = PromptTemplate.from_template("{product}のリリース日を教えて")
 
-langchain.llm_cache = InMemoryCache()
+result = chat(
+    [
+        HumanMessage(content=prompt.format(product="iPhone8")),
+        HumanMessage(content=output_parser.get_format_instructions()),
+    ]
+)
 
+output = output_parser.parse(result.content)
 
-start = time.time()
-result = chat([
-    HumanMessage(content="こんにちは！")
-])
-
-end = time.time()
-print(result.content)
-print(f"実行時間: {end - start}秒")
-
-start = time.time()
-result = chat([
-    HumanMessage(content='こんにちは!')
-])
-
-end = time.time()
-print(result.content)
-print(f"実行時間: {end - start}秒")
+print(output)
