@@ -1,12 +1,5 @@
 openai
 python-dotenv
-IPython
-redlines
-panel
 langchain
-youtube-transcript-api
-arxiv
-pymupdf
-wikipedia
-tiktoken
-PyPDF2
+langchain_openai
+langchain-core
