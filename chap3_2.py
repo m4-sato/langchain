@@ -1,37 +1,41 @@
+# from langchain.document_loaders import PyMuPDFLoader
 import os
-from numpy import dot
-from numpy.linalg import norm
-from dotenv import load_dotenv
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.embeddings import AzureOpenAIEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
+from langchain_community.document_loaders import PyMuPDFLoader
+from langchain_openai import AzureOpenAIEmbeddings
+from langchain.text_splitter import SpacyTextSplitter
 from langchain.vectorstores import Chroma  # ここでタイポ修正
+from dotenv import load_dotenv
+
+loader = PyMuPDFLoader("./sample.pdf")
+documents = loader.load()
 
 # 環境変数をロード
 load_dotenv()
 
-# Azure OpenAI APIの設定
-AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
-AZURE_OPENAI_API_KEY =  os.getenv("AZURE_OPENAI_API_KEY")
-AZURE_OPENAI_DEPLOYMENT_NAME =  os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")  # ここはご自身のデプロイメント名に置き換えてください
 
+print(f"ドキュメントの数:{len(documents)}")
+print(f"一つ目のドキュメント:{documents[0].page_content}")
+print(f"一つ目のドキュメント:{documents[0].metadata}")
 
-pdf_loader = PyPDFLoader("./sample.pdf")
-documents = pdf_loader.load()
+text_splitter = SpacyTextSplitter(
+    chunk_size=300,
+    pipeline="ja_core_news_sm"
+)
 
-# テキスト分割器の設定（ここでは1000文字ごとに分割）
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+splitted_documents = text_splitter.split_documents(documents)
 
-# 分割されたテキストリストを生成
-split_texts = text_splitter.split_documents(documents)
+print(f"分割前:{len(documents)}")
+print(f"分割跡:{len(splitted_documents)}")
 
 
 embeddings = AzureOpenAIEmbeddings(
-    model="text-embedding-3-small",
-    azure_endpoint=AZURE_OPENAI_ENDPOINT,
-    openai_api_key=AZURE_OPENAI_API_KEY,
-    chunk_size=2048  # chunk_sizeを明示的に設定
-)
+    model=os.getenv("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME"),
+    azure_endpoint=os.getenv("AZURE_OPENAI_EMBEDDINGS_ENDPOINT"),
+    api_key=os.getenv("AZURE_OPENAI_EMBEDDINGS_API_KEY"),
+    openai_api_version=os.getenv("AZURE_OPENAI_EMBEDDINGS_API_VERSION"),
+    chunk_size=2048
+    )
+
 
 database = Chroma(
     persist_directory="./data",
@@ -39,7 +43,15 @@ database = Chroma(
 )
 
 database.add_documents(
-    split_texts,
+    splitted_documents,
 )
 
 print('データベース登録完了')
+
+#########################################################################
+documents = database.similarity_search('飛行車の最高速度は？')
+
+print(f"ドキュメントの数: {len(documents)}")
+
+for document in documents:
+    print(f"ドキュメントの内容: {document.page_content}")

@@ -1,49 +1,43 @@
-from langchain.document_loaders import PyPDFLoader
-# from langchain.text_splitter import SpacyTextSplitter
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+import os
+# from langchain.embeddings import AzureOpenAIEmbeddings
+# from langchain_community.embeddings import AzureOpenAIEmbeddings
+from langchain_openai import AzureOpenAIEmbeddings
+from numpy import dot
+from numpy.linalg import norm
+from dotenv import load_dotenv
 
 
-pdf_loader = PyPDFLoader("./sample.pdf")
-documents = pdf_loader.load()
 
-# text_splitter = SpacyTextSplitter(
-#     chunk_size = 300,
-#     pipeline="ja_core_news_sm"
-# )
-
-# より賢く分割するための分割器
-recursive_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-
-# 分割
-split_texts_recursive = recursive_splitter.split_documents(documents)
-
-# 分割結果を確認
-for chunk in split_texts_recursive:
-    print(chunk)
-
-print(f"分割前のドキュメント数: {len(documents)}")
-print(f"分割後のドキュメント数: {len(split_texts_recursive)}")
+# 環境変数をロード
+load_dotenv()
 
 
-# =============================================================
-from langchain.text_splitter import CharacterTextSplitter
 
-# PDFを読み込む
-pdf_loader = PyPDFLoader("./sample.pdf")
 
-# PDFからテキストを抽出
-documents = pdf_loader.load()
+embeddings = AzureOpenAIEmbeddings(
+    model=os.getenv("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME"),
+    azure_endpoint=os.getenv("AZURE_OPENAI_EMBEDDINGS_ENDPOINT"),
+    api_key=os.getenv("AZURE_OPENAI_EMBEDDINGS_API_KEY"),
+    openai_api_version=os.getenv("AZURE_OPENAI_EMBEDDINGS_API_VERSION"),
+    chunk_size=2048
+    )
 
-# 抽出したテキストを確認
-for doc in documents:
-    print(doc.page_content)
+print("Deployment Name:", os.getenv("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME"))
+print("Endpoint:", os.getenv("AZURE_OPENAI_EMBEDDINGS_ENDPOINT"))
+print("API Key:", os.getenv("AZURE_OPENAI_EMBEDDINGS_API_KEY"))
+print("API Version:", os.getenv("AZURE_OPENAI_EMBEDDINGS_API_VERSION"))
 
-# テキスト分割器の設定（ここでは1000文字ごとに分割）
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
-# 分割されたテキストリストを生成
-split_texts = text_splitter.split_documents(documents)
+query_vector = embeddings.embed_query("飛行車の最高速度は?")
 
-# 分割されたテキストを確認
-for chunk in split_texts:
-    print(chunk)
+print(f"ベクトル化された質問：{query_vector[:5]}")
+
+document_1_vector = embeddings.embed_query("飛行車の最高速度は時速150キロメートルです。")
+document_2_vector = embeddings.embed_query("鶏肉を適切に下味をつけた後、中火で焼きながらたまに裏返し、外側は香ばしく中は柔らかく仕上げる。")
+
+cos_sim_1 = dot(query_vector, document_1_vector) / (norm(query_vector)*norm(document_1_vector))
+
+print(f"ドキュメント1と質問の類似度：{cos_sim_1}")
+cos_sim_2 = dot(query_vector, document_2_vector) / (norm(query_vector)*norm(document_2_vector))
+
+print(f"ドキュメント2と質問の類似度：{cos_sim_2}")
