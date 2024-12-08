@@ -43,7 +43,7 @@
 - https://github.com/AvanadeJapanPublishingQuery/AzureOpenAIServicePracticalGuide-book
 - [Flowise](https://flowiseai.com/)
 - [Prompt Engineering Guide](https://www.promptingguide.ai/jp)
--[awesome-langchain](https://github.com/kyrolabs/awesome-langchain)
+- [awesome-langchain](https://github.com/kyrolabs/awesome-langchain)
 
 
 ### サンプルデータ
