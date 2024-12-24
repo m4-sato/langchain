@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "test"
+version = "0.1.0"
+description = ""
+authors = ["masashi sato <mssst1116@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+openai = "^1.51.2"
+langchain = "^0.3.3"
+langchain-community = "^0.3.2"
+pymupdf = "^1.24.11"
+pypdf = "^5.0.1"
+chromadb = "^0.5.13"
+tiktoken = "^0.8.0"
+chainlit = "^1.2.0"
+pillow = "^11.0.0"
+flask = "^3.0.3"
+flask-wtf = "^1.2.1"
+python-dotenv = "^1.0.1"
+langchain-openai = "^0.2.8"
+spacy = "3.7.3"
+langchain-chroma = "^0.1.4"
+wikipedia = "^1.4.0"
+redis = "^5.2.0"
+psycopg = {extras = ["binary"], version = "^3.2.3"}
+psycopg2 = "^2.9.10"
+azure-ai-inference = "^1.0.0b6"
+langchain-postgres = "^0.0.12"
+asyncpg = "^0.30.0"
+bs4 = "^0.0.2"
+google-search-results = "^2.4.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
